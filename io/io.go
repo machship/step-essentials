@@ -1,12 +1,34 @@
 package io
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v3"
 )
+
+// GetMode returns the execution mode from environment variable
+func GetMode() string {
+	return os.Getenv("MODE")
+}
+
+// GetEnvironment returns the execution environment configuration from environment variable
+func GetEnvironment() map[string]any {
+	envJSON := os.Getenv("ENVIRONMENT")
+	if envJSON == "" {
+		return make(map[string]any)
+	}
+
+	var env map[string]any
+	if err := json.Unmarshal([]byte(envJSON), &env); err != nil {
+		fmt.Printf("Error parsing environment JSON: %v\n", err)
+		return make(map[string]any)
+	}
+
+	return env
+}
 
 // GetInputs parses the --inputs YAML argument or --inputs-file and returns a map[string]any
 func GetInputs() map[string]any {
